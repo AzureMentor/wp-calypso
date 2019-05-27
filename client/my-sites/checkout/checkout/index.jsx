@@ -413,6 +413,10 @@ export class Checkout extends React.Component {
 		if ( ':receiptId' === receiptId && isEmpty( getAllCartItems( cart ) ) ) {
 			return `/stats/day/${ selectedSiteSlug }`;
 		}
+		
+		if ( cartItems.hasPersonalPlan( cart ) ) {
+			return `/checkout/${ selectedSiteSlug }/add-plan-upgrade/${ receiptId }`;
+		}
 
 		if ( this.props.isNewlyCreatedSite && receipt && isEmpty( receipt.failed_purchases ) ) {
 			const siteDesignType = get( selectedSite, 'options.design_type' );
