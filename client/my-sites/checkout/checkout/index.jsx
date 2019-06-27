@@ -91,7 +91,11 @@ import PageViewTracker from 'lib/analytics/page-view-tracker';
 import isAtomicSite from 'state/selectors/is-site-automated-transfer';
 import config from 'config';
 import { abtest } from 'lib/abtest';
-import { persistSignupDestination, retrieveSignupDestination } from 'signup/utils';
+import {
+	persistSignupDestination,
+	retrieveSignupDestination,
+	clearSignupDestinationCookie,
+} from 'signup/utils';
 
 /**
  * Style dependencies
@@ -388,9 +392,10 @@ export class Checkout extends React.Component {
 		} else {
 			receiptId = this.props.purchaseId ? this.props.purchaseId : ':receiptId';
 		}
-		const destinationFromStore = retrieveSignupDestination();
-		const signupDestination = destinationFromStore
-			? destinationFromStore.replace( ':receiptId', receiptId )
+		
+		const destinationFromCookie = retrieveSignupDestination();
+		const signupDestination = destinationFromCookie
+			? destinationFromCookie.replace( ':receiptId', receiptId )
 			: `/view/${ selectedSiteSlug }`;
 
 		persistSignupDestination( signupDestination );
@@ -506,6 +511,7 @@ export class Checkout extends React.Component {
 		const redirectPath = this.getCheckoutCompleteRedirectPath();
 
 		this.props.clearPurchases();
+		clearSignupDestinationCookie();
 
 		if ( hasRenewalItem( cart ) ) {
 			// checkouts for renewals redirect back to `/purchases` with a notice
