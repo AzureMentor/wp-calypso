@@ -829,3 +829,4 @@ export default connect(
 		requestSite,
 	}
 )( localize( Checkout ) );
+
