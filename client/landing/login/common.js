@@ -6,6 +6,12 @@ import page from 'page';
 import url from 'url';
 import debugFactory from 'debug';
 
+/**
+ * Internal dependencies
+ */
+import config from 'config';
+import { setCurrentUser } from 'state/current-user/actions';
+
 const debug = debugFactory( 'calypso' );
 
 export function setupContextMiddleware() {
@@ -46,6 +52,24 @@ export function setupContextMiddleware() {
 		next();
 	} );
 }
+
+export const configureReduxStore = ( currentUser, reduxStore ) => {
+	debug( 'Executing Calypso configure Redux store.' );
+
+	if ( currentUser.get() ) {
+		// Set current user in Redux store
+		reduxStore.dispatch( setCurrentUser( currentUser.get() ) );
+		currentUser.on( 'change', () => {
+			reduxStore.dispatch( setCurrentUser( currentUser.get() ) );
+		} );
+	}
+
+	if ( config.isEnabled( 'network-connection' ) ) {
+		asyncRequire( 'lib/network-connection', networkConnection =>
+			networkConnection.init( reduxStore )
+		);
+	}
+};
 
 export function setupMiddlewares( currentUser, reduxStore ) {
 	setupContextMiddleware( reduxStore );

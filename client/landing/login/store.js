@@ -20,6 +20,8 @@ import section from 'state/ui/section/reducer';
 import layoutFocus from 'state/ui/layout-focus/reducer';
 import notices from 'state/notices/reducer';
 import i18n from 'state/i18n/reducer';
+import users from 'state/users/reducer';
+import currentUser from 'state/current-user/reducer';
 
 // Create Redux store
 const reducer = combineReducers( {
@@ -29,6 +31,8 @@ const reducer = combineReducers( {
 	login,
 	notices,
 	i18n,
+	users,
+	currentUser,
 	ui: combineReducers( {
 		language,
 		route,

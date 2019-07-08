@@ -7,13 +7,18 @@ import { hydrate, render } from 'controller/web-util';
 /**
  * External dependencies
  */
+import debugFactory from 'debug';
 import page from 'page';
+
 /**
  * Internal dependencies
  */
 import createStore from './store';
-import { setupMiddlewares } from './common';
+import { setupMiddlewares, configureReduxStore } from './common';
 import initLoginSection from 'login';
+import userFactory from 'lib/user';
+
+const debug = debugFactory( 'calypso' );
 
 // goofy import for environment badge, which is SSR'd
 import 'components/environment-badge/style.scss';
@@ -39,6 +44,19 @@ function renderHandler( context, next ) {
 	next();
 }
 
+const boot = currentUser => {
+	debug( "Starting Calypso. Let's do this." );
+
+	configureReduxStore( currentUser, store );
+	setupMiddlewares( currentUser, store );
+	page.start( { decodeURLComponents: false } );
+};
+
 window.AppBoot = () => {
-	page.start();
+	const user = userFactory();
+	if ( user.initialized ) {
+		boot( user );
+	} else {
+		user.once( 'change', () => boot( user ) );
+	}
 };
