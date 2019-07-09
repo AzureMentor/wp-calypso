@@ -336,8 +336,6 @@ export class Checkout extends React.Component {
 			return false;
 		}
 
-		let redirectTo = '/plans/';
-
 		if ( this.state.previousCart ) {
 			redirectTo = getExitCheckoutUrl( this.state.previousCart, selectedSiteSlug );
 		}
@@ -375,9 +373,9 @@ export class Checkout extends React.Component {
 		if ( isSiteOnFreePlan ) {
 			// For Blogger and Personal plan purchase, show an upgrade nudge for the Premium plan.
 			// Show the nudge only if the user is upgrading from a Free plan.
-			if ( cartItems.hasBloggerPlan( cart ) || cartItems.hasPersonalPlan( cart ) ) {
+			if ( hasBloggerPlan( cart ) || hasPersonalPlan( cart ) ) {
 				if ( 'variantShowNudge' === abtest( 'showPlanUpsellNudge' ) ) {
-					return cartItems.hasBloggerPlan( cart )
+					return hasBloggerPlan( cart )
 						? `/checkout/${ selectedSiteSlug }/add-plan-upgrade/personal/${ receiptId }`
 						: `/checkout/${ selectedSiteSlug }/add-plan-upgrade/premium/${ receiptId }`;
 				}
@@ -386,24 +384,7 @@ export class Checkout extends React.Component {
 		return;
 	}
 
-	isNudgeSkipEligibleForChecklist( isRedirectedFrom, receiptId ) {
-		// If the user is coming from these pages (example: they clicked the `Skip` button on the Concierge upsell nudge),
-		// then verify if they qualify for the Checklist page.
-		const sourcePages = [ 'plan-upgrade-nudge' ];
-
-		if (
-			sourcePages.includes( isRedirectedFrom ) &&
-			this.props.isNewlyCreatedSite &&
-			this.props.isEligibleForDotcomChecklist &&
-			receiptId
-		) {
-			return true;
-		}
-
-		return false;
-	}
-
-	getCheckoutCompleteRedirectPath = ( isRedirectedFrom, previousReceiptId ) => {
+	getCheckoutCompleteRedirectPath = () => {
 		// TODO: Cleanup and simplify this function.
 		// I wouldn't be surprised if it doesn't work as intended in some scenarios.
 		// Especially around the G Suite / Concierge / Checklist logic.
@@ -456,9 +437,9 @@ export class Checkout extends React.Component {
 		if ( ':receiptId' === receiptId && isEmpty( getAllCartItems( cart ) ) ) {
 			return `/stats/day/${ selectedSiteSlug }`;
 		}
-		
-		if ( cartItems.hasPersonalPlan( cart ) ) {
-			return `/checkout/${ selectedSiteSlug }/add-plan-upgrade/${ receiptId }`;
+
+		if ( hasPersonalPlan( cart ) ) {
+			// return `/checkout/${ selectedSiteSlug }/add-plan-upgrade/${ receiptId }`;
 		}
 
 		if ( this.props.isNewlyCreatedSite && receipt && isEmpty( receipt.failed_purchases ) ) {
@@ -486,22 +467,6 @@ export class Checkout extends React.Component {
 			) {
 				const domainsForGSuite = this.getEligibleDomainFromCart();
 				if ( domainsForGSuite.length ) {
-					if ( config.isEnabled( 'upsell/concierge-session' ) ) {
-						if (
-							! cartItems.hasJetpackPlan( cart ) &&
-							( cartItems.hasBloggerPlan( cart ) ||
-								cartItems.hasPersonalPlan( cart ) ||
-								cartItems.hasPremiumPlan( cart ) )
-						) {
-							// Assign a test group as late as possible
-							if ( 'show' === abtest( 'showConciergeSessionUpsell' ) ) {
-								// A user just purchased one of the qualifying plans and is in the "show" ab test variation
-								// Show them the concierge session upsell page
-								return `/checkout/${ selectedSiteSlug }/add-quickstart-session/${ receiptId }`;
-							}
-						}
-					}
-
 					return (
 						this.maybeShowPlanUpgradeABTest( receiptId ) ||
 						`/checkout/${ selectedSiteSlug }/with-gsuite/${
@@ -522,12 +487,9 @@ export class Checkout extends React.Component {
 		// There's an additional test above that tests directly aginst the G Suite upsell
 		if (
 			config.isEnabled( 'upsell/concierge-session' ) &&
-			! cartItems.hasConciergeSession( cart ) &&
-			! cartItems.hasJetpackPlan( cart ) &&
-			( cartItems.hasBloggerPlan( cart ) ||
-				cartItems.hasPersonalPlan( cart ) ||
-				cartItems.hasPremiumPlan( cart ) ||
-				[ 'plan-upgrade-nudge' ].includes( isRedirectedFrom ) )
+			! hasConciergeSession( cart ) &&
+			! hasJetpackPlan( cart ) &&
+			( hasBloggerPlan( cart ) || hasPersonalPlan( cart ) || hasPremiumPlan( cart ) )
 		) {
 			// A user just purchased one of the qualifying plans
 			// Show them the concierge session upsell page
