@@ -14,6 +14,7 @@ import { localize } from 'i18n-calypso';
 import Card from 'components/card';
 import Main from 'components/main';
 import SiteSelector from 'components/site-selector';
+import VisitSite from 'blocks/visit-site';
 
 /**
  * Style dependencies
@@ -102,6 +103,7 @@ class Sites extends Component {
 	render() {
 		return (
 			<Main className="sites">
+				{ this.props.fromSite && <VisitSite siteSlug={ this.props.fromSite } /> }
 				<h2 className="sites__select-heading">{ this.getHeaderText() }</h2>
 				<Card className="sites__select-wrapper">
 					<SiteSelector
