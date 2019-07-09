@@ -6,7 +6,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classnames from 'classnames';
-import { noop } from 'lodash';
+import { get, noop } from 'lodash';
 import Gridicon from 'gridicons';
 import { localize } from 'i18n-calypso';
 import page from 'page';
@@ -184,8 +184,8 @@ class Site extends React.Component {
 }
 
 function mapStateToProps( state, ownProps ) {
-	const siteId = ownProps.siteId || ownProps.site.ID;
-	const site = siteId ? getSite( state, siteId ) : ownProps.site;
+	const siteId = ownProps.siteId || get( ownProps.site, 'ID', null );
+	const site = ownProps.siteId ? getSite( state, ownProps.siteId ) : ownProps.site;
 
 	return {
 		siteId,
