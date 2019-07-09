@@ -14,6 +14,7 @@ import { startCase } from 'lodash';
 /**
  * Internal dependencies
  */
+import VisitSite from 'blocks/visit-site';
 import AutomatticLogo from 'components/automattic-logo';
 import DocumentHead from 'components/data/document-head';
 import getCurrentLocaleSlug from 'state/selectors/get-current-locale-slug';
@@ -218,6 +219,7 @@ export class Login extends React.Component {
 
 	render() {
 		const {
+			fromSite,
 			isLoginView,
 			locale,
 			path,
@@ -237,7 +239,7 @@ export class Login extends React.Component {
 						link={ [ { rel: 'canonical', href: canonicalUrl } ] }
 						meta={ [ { name: 'description', content: 'Log in to WordPress.com' } ] }
 					/>
-
+					{ fromSite && <VisitSite siteSlug={ fromSite } /> }
 					<div>
 						<div className="wp-login__container">{ this.renderContent() }</div>
 
