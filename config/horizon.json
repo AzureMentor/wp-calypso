@@ -45,6 +45,7 @@
 		"jetpack/checklist/performance": true,
 		"jetpack/concierge-sessions": false,
 		"jetpack/connect/remote-install": true,
+		"jetpack/connect/site-questions": true,
 		"jetpack/happychat": true,
 		"jetpack/gutenframe": true,
 		"jitms": true,
