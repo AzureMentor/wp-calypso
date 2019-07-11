@@ -78,7 +78,7 @@
 		"jetpack/connect/remote-install": true,
 		"jetpack/connect/mobile-app-flow": true,
 		"jetpack/connect/woocommerce": true,
-		"jetpack/connect/site-questions": false,
+		"jetpack/connect/site-questions": true,
 		"jetpack/happychat": true,
 		"jetpack/gutenframe": true,
 		"jitms": true,
