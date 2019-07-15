@@ -19,6 +19,8 @@
 		"bundle": "calypso-build --env.WP",
 		"build:dev": "npm run bundle --",
 		"build:prod": "NODE_ENV=production npm run bundle --",
+		"watch:dev": "npm run bundle -- --watch",
+		"watch:prod": "NODE_ENV=production npm run bundle -- --watch",
 		"build": "npm-run-all --parallel \"build:* -- {@}\" --"
 	},
 	"dependencies": {
