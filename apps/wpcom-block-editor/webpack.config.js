@@ -57,6 +57,7 @@ function getWebpackConfig(
 	return {
 		...webpackConfig,
 		devtool: isDevelopment ? 'inline-cheap-source-map' : false,
+		watch: process.argv && process.argv[ '--watch' ],
 	};
 }
 
