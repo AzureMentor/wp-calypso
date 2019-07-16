@@ -50,11 +50,19 @@ const EVENTS_MAPPING = [
 	{
 		selector: '.block-editor-block-types-list__item',
 		handler: function( event ) {
-			const blockName = event.target
-				.closest( '.block-editor-block-types-list__item' )
-				.querySelector( '.block-editor-block-types-list__item-title' ).innerText;
+			const targetClassname = Array.from( event.target.classList ).filter( className =>
+				className.includes( 'editor-block-list-item-' )
+			);
 
-			tracksRecordEvent( 'gutenberg_block_picker_block_inserted', {
+			if ( ! targetClassname.length ) {
+				return;
+			}
+
+			// The block name is stored within the className attribute of the `button`
+			// https://github.com/WordPress/gutenberg/blob/5a3c3586024fbb0b9e0276b5e31103ddf83edd52/packages/block-editor/src/components/block-types-list/index.js#L22.
+			const blockName = targetClassname[ 0 ].replace( 'editor-block-list-item-', '' );
+
+			tracksRecordEvent( 'wpcom_block_picker_block_inserted', {
 				blockName: blockName,
 			} );
 		},
