@@ -17,27 +17,27 @@ import InjectedStripeCreditCardPaymentBox from './credit-card-payment-box';
 
 const debug = debugFactory( 'calypso:stripe-elements-payment-box' );
 
-function useStripeJs( stripeConfig ) {
+function useStripeJs( stripeConfiguration ) {
 	const [ stripeJs, setStripeJs ] = useState( null );
 	useEffect( () => {
-		if ( ! stripeConfig ) {
+		if ( ! stripeConfiguration ) {
 			return;
 		}
 		if ( window.Stripe ) {
 			debug( 'stripe.js already loaded' );
-			setStripeJs( window.Stripe( stripeConfig.public_key ) );
+			setStripeJs( window.Stripe( stripeConfiguration.public_key ) );
 			return;
 		}
 		debug( 'loading stripe.js...' );
-		loadScript( stripeConfig.js_url, function( error ) {
+		loadScript( stripeConfiguration.js_url, function( error ) {
 			if ( error ) {
 				debug( 'stripe.js script ' + error.src + ' failed to load.' );
 				return;
 			}
 			debug( 'stripe.js loaded!' );
-			setStripeJs( window.Stripe( stripeConfig.public_key ) );
+			setStripeJs( window.Stripe( stripeConfiguration.public_key ) );
 		} );
-	}, [ stripeConfig ] );
+	}, [ stripeConfiguration ] );
 	return stripeJs;
 }
 
