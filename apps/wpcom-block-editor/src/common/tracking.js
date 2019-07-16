@@ -122,10 +122,7 @@ const delegateClickTracking = function( event ) {
  */
 registerPlugin( 'wpcom-block-editor-tracking', {
 	render: () => {
-		document.addEventListener( 'click', function( e ) {
-			delegateClickTracking( e );
-		} );
-
+		document.addEventListener( 'click', delegateClickTracking );
 		return null;
 	},
 } );
