@@ -6,7 +6,7 @@
 import request from 'superagent';
 import i18n from 'i18n-calypso';
 import debugFactory from 'debug';
-import { map, includes } from 'lodash';
+import { includes, map, pick } from 'lodash';
 import { parse as parseUrl, format as formatUrl } from 'url';
 
 /**
@@ -64,6 +64,9 @@ function setLocaleInDOM( localeSlug, isRTL ) {
 }
 
 let lastRequestedLocale = null;
+// Note that the setLocale() action calls this function but not vice-versa,
+// so be aware of the risk of inconsistency with the redux store when calling
+// this directly.
 export default function switchLocale( localeSlug ) {
 	// check if the language exists in config.languages
 	const language = getLanguage( localeSlug );
@@ -109,35 +112,38 @@ export default function switchLocale( localeSlug ) {
 
 			setLocaleInDOM( domLocaleSlug, !! language.rtl );
 
-			loadUserUndeployedTranslations( targetLocaleSlug );
+			loadUndeployedTranslations( {
+				...parseTranslationURLQueryParams(),
+				locale: targetLocaleSlug,
+			} );
 		} );
 	}
 }
 
-export function loadUserUndeployedTranslations( currentLocaleSlug ) {
+/**
+ * @returns {Object} Shaped like { username, project, translationSet, translationStatus }
+ */
+export function parseTranslationURLQueryParams() {
 	if ( ! location || ! location.search ) {
-		return;
+		return {};
 	}
 
 	const parsedURL = parseUrl( location.search, true );
+	const translationFields = [ 'project', 'translationSet', 'translationStatus' ];
 
-	const {
-		'load-user-translations': username,
-		project = 'wpcom',
-		translationSet = 'default',
-		translationStatus = 'current',
-		locale = currentLocaleSlug,
-	} = parsedURL.query;
+	const queryParams = pick( parsedURL.query, translationFields );
+	queryParams.username = parsedURL.query[ 'load-user-translations' ];
 
-	const translationParams = {
-		username,
-		project,
-		translationSet,
-		translationStatus,
-		locale,
-	};
+	return queryParams;
+}
 
-	return loadUndeployedTranslations( translationParams );
+export function loadUserUndeployedTranslations( currentLocaleSlug ) {
+	const translationParams = parseTranslationURLQueryParams();
+
+	return loadUndeployedTranslations( {
+		...translationParams,
+		locale: currentLocaleSlug,
+	} );
 }
 
 export function loadUndeployedTranslations( {
@@ -163,7 +169,9 @@ export function loadUndeployedTranslations( {
 		// return;
 	}
 
-	debug( `loading undeployed translations for ${ username } from ${ project }/${ translationSet }` );
+	debug(
+		`loading undeployed translations for ${ username } from ${ project }/${ translationSet }`
+	);
 	const pathname = [
 		'api',
 		'projects',
