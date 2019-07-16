@@ -54,6 +54,7 @@ const tracksRecordEvent = function( eventName, eventProperties ) {
 const EVENTS_MAPPING = [
 	{
 		selector: '.block-editor-block-types-list__item',
+		type: 'click',
 		handler: function( event, target ) {
 			const targetClassname = Array.from( target.classList ).filter( className =>
 				className.includes( 'editor-block-list-item-' )
@@ -72,6 +73,18 @@ const EVENTS_MAPPING = [
 			} );
 		},
 	},
+
+	{
+		selector: '.block-editor-block-mover__control-drag-handle',
+		type: 'dragstart',
+		handler: function() {},
+	},
+
+	{
+		selector: '.block-editor-block-mover__control-drag-handle',
+		type: 'drop',
+		handler: function() {},
+	},
 ];
 
 /**
@@ -79,22 +92,22 @@ const EVENTS_MAPPING = [
  * Matches an event against list of known events
  * and for each match fires an appropriate handler function.
  *
- * @param  {Object} event DOM event for the click event
+ * @param  {Object} event DOM event for the click event.
  * @return {void}
  */
-const delegateClickTracking = function( event ) {
+const delegateEventTracking = function( event ) {
 	const matchingEvents = EVENTS_MAPPING.reduce( ( acc, mapping ) => {
-		const target =
-			event.target.matches( mapping.selector ) || event.target.closest( mapping.selector );
+		const target = event.target.matches( mapping.selector )
+			? event.target
+			: event.target.closest( mapping.selector );
 
-		if ( target ) {
+		if ( target && event.type && event.type === mapping.type ) {
 			acc.push( {
 				mapping: mapping,
 				event: event,
 				target: target,
 			} );
 		}
-
 		return acc;
 	}, [] );
 
@@ -110,8 +123,16 @@ const delegateClickTracking = function( event ) {
  */
 registerPlugin( 'wpcom-block-editor-tracking', {
 	render: () => {
-		document.addEventListener( 'click', function( e ) {
-			delegateClickTracking( e );
+		document.addEventListener( 'click', function( event ) {
+			delegateEventTracking( event );
+		} );
+
+		document.addEventListener( 'dragstart', function( event ) {
+			delegateEventTracking( event );
+		} );
+
+		document.addEventListener( 'drop', function( event ) {
+			delegateEventTracking( event );
 		} );
 
 		return null;
