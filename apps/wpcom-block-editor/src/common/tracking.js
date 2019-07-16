@@ -54,6 +54,7 @@ const tracksRecordEvent = function( eventName, eventProperties ) {
 const EVENTS_MAPPING = [
 	{
 		selector: '.block-editor-block-types-list__item',
+		type: 'click',
 		handler: ( event, target ) => {
 			const targetClassname = Array.from( target.classList ).filter( className =>
 				className.includes( 'editor-block-list-item-' )
@@ -75,6 +76,7 @@ const EVENTS_MAPPING = [
 
 	{
 		selector: '.block-editor-block-settings-menu__control',
+		type: 'click',
 		handler: ( event, target ) => {
 			const hasCorrectText = target.innerText.toLowerCase().includes( 'remove block' );
 			const hasCorrectIcon = target.querySelector( 'svg' ).classList.contains( 'dashicons-trash' );
@@ -100,7 +102,7 @@ const delegateEventTracking = function( event ) {
 			? event.target
 			: event.target.closest( mapping.selector );
 
-		if ( target ) {
+		if ( target && event.type && event.type === mapping.type ) {
 			acc.push( {
 				mapping: mapping,
 				event: event,
