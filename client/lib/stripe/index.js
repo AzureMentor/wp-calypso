@@ -35,16 +35,16 @@ export async function createStripePaymentMethod( stripe, paymentDetails ) {
  * Confirm any PaymentIntent from Stripe response and carry out 3DS or
  * other next_actions if they are required.
  *
- * @param {object} stripe The stripe object with payment data included
+ * @param {object} stripeConfiguration The data from the Stripe Configuration endpoint
  * @param {string} paymentIntentClientSecret The client secret of the PaymentIntent
  * @return {Promise} Promise that will be resolved or rejected
  */
-export async function confirmStripePaymentIntent( stripe, paymentIntentClientSecret ) {
+export async function confirmStripePaymentIntent( stripeConfiguration, paymentIntentClientSecret ) {
 	debug( 'Confirming paymentIntent...', paymentIntentClientSecret );
 
 	// Setup a stripe instance that is disconnected from our Elements
 	// Otherwise, we'll create another paymentMethod, which we don't want
-	const standAloneStripe = window.Stripe( stripe._apiKey );
+	const standAloneStripe = window.Stripe( stripeConfiguration.public_key );
 
 	const { paymentIntent, error } = await standAloneStripe.handleCardPayment(
 		paymentIntentClientSecret,

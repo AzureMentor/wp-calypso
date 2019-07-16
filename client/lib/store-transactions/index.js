@@ -81,7 +81,7 @@ TransactionFlow.prototype._paymentHandlers = {
 				stored_details_id,
 				payment_partner,
 			} = this._initialData.payment.storedCard,
-			{ successUrl, cancelUrl, stripe } = this._initialData;
+			{ successUrl, cancelUrl, stripeConfiguration } = this._initialData;
 
 		this._pushStep( { name: INPUT_VALIDATION, first: true } );
 		debug( 'submitting transaction with stored card' );
@@ -96,7 +96,7 @@ TransactionFlow.prototype._paymentHandlers = {
 
 		// Authentication via modal screen
 		if ( response && response.message && response.message.payment_intent_client_secret ) {
-			await this.stripeModalAuth( stripe, response );
+			await this.stripeModalAuth( stripeConfiguration, response );
 		}
 	},
 
@@ -160,7 +160,7 @@ TransactionFlow.prototype._paymentHandlers = {
 
 	WPCOM_Billing_Stripe_Payment_Method: async function() {
 		const { newCardDetails } = this._initialData.payment;
-		const { successUrl, cancelUrl, stripe } = this._initialData;
+		const { successUrl, cancelUrl, stripe, stripeConfiguration } = this._initialData;
 		debug( 'validating transaction with new stripe elements card' );
 		const validation = validatePaymentDetails( newCardDetails, 'stripe' );
 
@@ -204,7 +204,7 @@ TransactionFlow.prototype._paymentHandlers = {
 
 			// Authentication via modal screen
 			if ( response && response.message && response.message.payment_intent_client_secret ) {
-				await this.stripeModalAuth( stripe, response );
+				await this.stripeModalAuth( stripeConfiguration, response );
 			}
 		} catch ( error ) {
 			this._pushStep( {
@@ -290,10 +290,10 @@ TransactionFlow.prototype._submitWithPayment = function( payment ) {
 	} );
 };
 
-TransactionFlow.prototype.stripeModalAuth = async function( stripe, response ) {
+TransactionFlow.prototype.stripeModalAuth = async function( stripeConfiguration, response ) {
 	try {
 		const authenticationResponse = await confirmStripePaymentIntent(
-			stripe,
+			stripeConfiguration,
 			response.message.payment_intent_client_secret
 		);
 
