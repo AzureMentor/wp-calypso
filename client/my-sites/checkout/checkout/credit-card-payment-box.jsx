@@ -34,6 +34,41 @@ import CheckoutTerms from './checkout-terms';
 import { injectStripe } from 'react-stripe-elements';
 import { setStripeObject } from 'lib/upgrades/actions';
 
+function isFormSubmitting( transactionStep, props ) {
+	switch ( transactionStep.name ) {
+		case BEFORE_SUBMIT:
+			return false;
+
+		case INPUT_VALIDATION:
+			if ( transactionStep.error ) {
+				return false;
+			}
+			return true;
+
+		case RECEIVED_AUTHORIZATION_RESPONSE:
+		case RECEIVED_PAYMENT_KEY_RESPONSE:
+			if ( props.transactionStep.error ) {
+				return false;
+			}
+			return true;
+
+		case SUBMITTING_PAYMENT_KEY_REQUEST:
+		case SUBMITTING_WPCOM_REQUEST:
+		case REDIRECTING_FOR_AUTHORIZATION:
+		case MODAL_AUTHORIZATION:
+			return true;
+
+		case RECEIVED_WPCOM_RESPONSE:
+			if ( transactionStep.error || ! transactionStep.data.success ) {
+				return false;
+			}
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 class CreditCardPaymentBox extends React.Component {
 	static propTypes = {
 		cart: PropTypes.object.isRequired,
@@ -65,8 +100,8 @@ class CreditCardPaymentBox extends React.Component {
 
 	UNSAFE_componentWillReceiveProps( nextProps ) {
 		if (
-			! this.submitting( this.props.transactionStep ) &&
-			this.submitting( nextProps.transactionStep )
+			! isFormSubmitting( this.props.transactionStep, this.props ) &&
+			isFormSubmitting( nextProps.transactionStep, this.props )
 		) {
 			this.timer = setInterval( this.tick, 100 );
 		}
@@ -90,41 +125,6 @@ class CreditCardPaymentBox extends React.Component {
 		const progress = this.state.progress + ( 1 / 200 ) * ( 100 - this.state.progress );
 
 		this.setState( { progress } );
-	};
-
-	submitting = transactionStep => {
-		switch ( transactionStep.name ) {
-			case BEFORE_SUBMIT:
-				return false;
-
-			case INPUT_VALIDATION:
-				if ( transactionStep.error ) {
-					return false;
-				}
-				return true;
-
-			case RECEIVED_AUTHORIZATION_RESPONSE:
-			case RECEIVED_PAYMENT_KEY_RESPONSE:
-				if ( this.props.transactionStep.error ) {
-					return false;
-				}
-				return true;
-
-			case SUBMITTING_PAYMENT_KEY_REQUEST:
-			case SUBMITTING_WPCOM_REQUEST:
-			case REDIRECTING_FOR_AUTHORIZATION:
-			case MODAL_AUTHORIZATION:
-				return true;
-
-			case RECEIVED_WPCOM_RESPONSE:
-				if ( transactionStep.error || ! transactionStep.data.success ) {
-					return false;
-				}
-				return true;
-
-			default:
-				return false;
-		}
 	};
 
 	progressBar = () => {
@@ -168,7 +168,10 @@ class CreditCardPaymentBox extends React.Component {
 
 	paymentBoxActions = () => {
 		let content = this.paymentButtons();
-		if ( this.props.transactionStep && this.submitting( this.props.transactionStep ) ) {
+		if (
+			this.props.transactionStep &&
+			isFormSubmitting( this.props.transactionStep, this.props )
+		) {
 			content = this.progressBar();
 		}
 
