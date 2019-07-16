@@ -90,13 +90,32 @@ const EVENTS_MAPPING = [
 	{
 		selector: '.block-editor-block-mover__control-drag-handle',
 		type: 'dragstart',
-		handler: () => {},
+		handler: ( event, target ) => {
+			const blockContainer = target.closest( '.block-editor-block-list__block' );
+			if ( ! blockContainer ) {
+				return;
+			}
+
+			const blockType = blockContainer.dataset ? blockContainer.dataset.type : null;
+			if ( ! blockType ) {
+				return;
+			}
+
+			// Storing the block type into dataTransfer event property.
+			event.dataTransfer.setData( 'blockType', blockType );
+		},
 	},
 
 	{
-		selector: '.block-editor-block-mover__control-drag-handle',
+		selector: '.block-editor-block-drop-zone',
 		type: 'drop',
-		handler: () => {},
+		handler: ( event, target ) => {
+			const draggedBlockType = event.dataTransfer.getData( 'blockType' );
+			//eslint-disable-next-line no-console
+			console.log( { event } ); //eslint-disable-next-line no-console
+			console.log( { target } ); //eslint-disable-next-line no-console, no-unused-vars
+			console.log( { draggedBlockType } );
+		},
 	},
 ];
 
