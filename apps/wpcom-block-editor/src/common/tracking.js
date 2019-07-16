@@ -115,11 +115,7 @@ const delegateEventTracking = function( event ) {
 			: event.target.closest( mapping.selector );
 
 		if ( target && event.type && event.type === mapping.type ) {
-			acc.push( {
-				mapping: mapping,
-				event: event,
-				target: target,
-			} );
+			acc.push( { mapping, event, target } );
 		}
 		return acc;
 	}, [] );
