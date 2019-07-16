@@ -195,6 +195,7 @@ TransactionFlow.prototype._paymentHandlers = {
 			const response = await this._submitWithPayment( {
 				payment_method: 'WPCOM_Billing_Stripe_Payment_Method',
 				payment_key: stripePaymentMethod.id,
+				payment_partner: stripeConfiguration.processor_id,
 				name,
 				zip,
 				country,
