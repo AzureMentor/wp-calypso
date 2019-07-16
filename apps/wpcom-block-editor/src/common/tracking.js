@@ -46,11 +46,16 @@ const tracksRecordEvent = function( eventName, eventProperties ) {
 	}
 };
 
+/**
+ * Mapping of Events by DOM selector.
+ * Events are matched by selector and their handlers called.
+ * @type {Array}
+ */
 const EVENTS_MAPPING = [
 	{
 		selector: '.block-editor-block-types-list__item',
-		handler: function( event ) {
-			const targetClassname = Array.from( event.target.classList ).filter( className =>
+		handler: function( event, target ) {
+			const targetClassname = Array.from( target.classList ).filter( className =>
 				className.includes( 'editor-block-list-item-' )
 			);
 
@@ -69,20 +74,40 @@ const EVENTS_MAPPING = [
 	},
 ];
 
+/**
+ * Handles delegation of click tracking events.
+ * Matches an event against list of known events
+ * and for each match fires an appropriate handler function.
+ *
+ * @param  {Object} event DOM event for the click event
+ * @return {void}
+ */
 const delegateClickTracking = function( event ) {
-	const matchingEvents = EVENTS_MAPPING.filter( mapping => {
-		return event.target.matches( mapping.selector ) || event.target.closest( mapping.selector );
-	} );
+	const matchingEvents = EVENTS_MAPPING.reduce( ( acc, mapping ) => {
+		const target =
+			event.target.matches( mapping.selector ) || event.target.closest( mapping.selector );
 
-	// console.log(event, matchingEvents);
+		if ( target ) {
+			acc.push( {
+				mapping: mapping,
+				event: event,
+				target: target,
+			} );
+		}
+
+		return acc;
+	}, [] );
 
 	if ( ! matchingEvents.length ) {
 		return;
 	}
 
-	matchingEvents.forEach( match => match.handler( event ) );
+	matchingEvents.forEach( match => match.mapping.handler( match.event, match.target ) );
 };
 
+/**
+ * Registers Plugin
+ */
 registerPlugin( 'wpcom-block-editor-tracking', {
 	render: () => {
 		document.addEventListener( 'click', function( e ) {
