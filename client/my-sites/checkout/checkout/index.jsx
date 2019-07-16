@@ -482,7 +482,7 @@ export class Checkout extends React.Component {
 
 		const queryParam = displayModeParam ? `?${ displayModeParam }` : '';
 
-		if ( this.props.isEligibleForSignupDestination & ( ':receiptId' !== receiptId ) ) {
+		if ( this.props.isEligibleForSignupDestination && ':receiptId' !== receiptId ) {
 			return `${ signupDestination }${ queryParam }`;
 		}
 
