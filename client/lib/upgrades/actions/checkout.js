@@ -32,10 +32,11 @@ export function setPayment( payment ) {
 	} );
 }
 
-export function setStripeObject( stripe ) {
+export function setStripeObject( stripe, stripeConfiguration ) {
 	Dispatcher.handleViewAction( {
 		type: TRANSACTION_STRIPE_SET,
 		stripe,
+		stripeConfiguration,
 	} );
 }
 
@@ -58,6 +59,7 @@ export function submitTransaction( { cart, transaction, successUrl, cancelUrl },
 			successUrl,
 			cancelUrl,
 			stripe: transaction.stripe,
+			stripeConfiguration: transaction.stripeConfiguration,
 		},
 		// Execute every step handler in its own event loop tick, so that a complete React
 		// rendering cycle happens on each step and `componentWillReceiveProps` of objects

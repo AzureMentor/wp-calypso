@@ -45,6 +45,7 @@ class CreditCardPaymentBox extends React.Component {
 		onSubmit: PropTypes.func,
 		translate: PropTypes.func.isRequired,
 		stripe: PropTypes.object,
+		stripeConfiguration: PropTypes.object,
 	};
 
 	static defaultProps = {
@@ -178,7 +179,7 @@ class CreditCardPaymentBox extends React.Component {
 		event.preventDefault();
 
 		if ( this.props.stripe ) {
-			setStripeObject( this.props.stripe );
+			setStripeObject( this.props.stripe, this.props.stripeConfiguration );
 		}
 
 		this.setState( {

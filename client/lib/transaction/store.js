@@ -112,7 +112,7 @@ TransactionStore.dispatchToken = Dispatcher.register( function( payload ) {
 			break;
 
 		case TRANSACTION_STRIPE_SET:
-			setStripeObject( action.stripe );
+			setStripeObject( action.stripe, action.stripeConfiguration );
 			break;
 
 		case TRANSACTION_NEW_CREDIT_CARD_DETAILS_SET:

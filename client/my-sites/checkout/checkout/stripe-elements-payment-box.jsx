@@ -80,6 +80,7 @@ export function StripeElementsPaymentBox( {
 					onSubmit={ onSubmit }
 					transactionStep={ transaction.step }
 					presaleChatAvailable={ presaleChatAvailable }
+					stripeConfiguration={ stripeConfiguration }
 				>
 					{ children }
 				</InjectedStripeCreditCardPaymentBox>
