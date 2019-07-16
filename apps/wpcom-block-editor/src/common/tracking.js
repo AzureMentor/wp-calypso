@@ -90,13 +90,13 @@ const EVENTS_MAPPING = [
 	{
 		selector: '.block-editor-block-mover__control-drag-handle',
 		type: 'dragstart',
-		handler: function() {},
+		handler: () => {},
 	},
 
 	{
 		selector: '.block-editor-block-mover__control-drag-handle',
 		type: 'drop',
-		handler: function() {},
+		handler: () => {},
 	},
 ];
 
@@ -114,7 +114,10 @@ const delegateEventTracking = function( event ) {
 			? event.target
 			: event.target.closest( mapping.selector );
 
-		if ( target && event.type && event.type === mapping.type ) {
+		// Set `click` as default of mapping event type.
+		const mappingEventType = mapping.type || 'click';
+
+		if ( target && event.type && event.type === mappingEventType ) {
 			acc.push( { mapping, event, target } );
 		}
 		return acc;
@@ -133,6 +136,14 @@ const delegateEventTracking = function( event ) {
 registerPlugin( 'wpcom-block-editor-tracking', {
 	render: () => {
 		document.addEventListener( 'click', function( event ) {
+			delegateEventTracking( event );
+		} );
+
+		document.addEventListener( 'dragstart', function( event ) {
+			delegateEventTracking( event );
+		} );
+
+		document.addEventListener( 'drop', function( event ) {
 			delegateEventTracking( event );
 		} );
 
