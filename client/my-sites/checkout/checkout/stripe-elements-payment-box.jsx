@@ -13,7 +13,7 @@ import { StripeProvider, Elements } from 'react-stripe-elements';
  * Internal dependencies
  */
 import { getStripeConfiguration } from 'lib/store-transactions';
-import InjectedStripeCreditCardPaymentBox from './credit-card-payment-box';
+import CreditCardPaymentBox from './credit-card-payment-box';
 
 const debug = debugFactory( 'calypso:stripe-elements-payment-box' );
 
@@ -64,12 +64,12 @@ export function StripeElementsPaymentBox( {
 	cards,
 } ) {
 	// TODO: send the country to useStripeConfiguration
-	const stripeConfiguration = useStripeConfiguration( InjectedStripeCreditCardPaymentBox );
+	const stripeConfiguration = useStripeConfiguration( CreditCardPaymentBox );
 	const stripeJs = useStripeJs( stripeConfiguration );
 	return (
 		<StripeProvider stripe={ stripeJs }>
 			<Elements>
-				<InjectedStripeCreditCardPaymentBox
+				<CreditCardPaymentBox
 					translate={ translate }
 					cards={ cards }
 					transaction={ transaction }
@@ -83,7 +83,7 @@ export function StripeElementsPaymentBox( {
 					stripeConfiguration={ stripeConfiguration }
 				>
 					{ children }
-				</InjectedStripeCreditCardPaymentBox>
+				</CreditCardPaymentBox>
 			</Elements>
 		</StripeProvider>
 	);
