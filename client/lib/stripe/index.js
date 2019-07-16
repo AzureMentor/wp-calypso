@@ -41,7 +41,15 @@ export async function createStripePaymentMethod( stripe, paymentDetails ) {
  */
 export async function confirmStripePaymentIntent( stripe, paymentIntentClientSecret ) {
 	debug( 'Confirming paymentIntent...', paymentIntentClientSecret );
-	const { paymentIntent, error } = await stripe.handleCardPayment( paymentIntentClientSecret, {} );
+
+	// Setup a stripe instance that is disconnected from our Elements
+	// Otherwise, we'll create another paymentMethod, which we don't want
+	const standAloneStripe = window.Stripe( stripe._apiKey );
+
+	const { paymentIntent, error } = await standAloneStripe.handleCardPayment(
+		paymentIntentClientSecret,
+		{}
+	);
 	if ( error ) {
 		// Note that this is a promise rejection
 		throw new Error( error.message );
