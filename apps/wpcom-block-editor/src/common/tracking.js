@@ -86,6 +86,18 @@ const EVENTS_MAPPING = [
 			}
 		},
 	},
+
+	{
+		selector: '.block-editor-block-mover__control-drag-handle',
+		type: 'dragstart',
+		handler: function() {},
+	},
+
+	{
+		selector: '.block-editor-block-mover__control-drag-handle',
+		type: 'drop',
+		handler: function() {},
+	},
 ];
 
 /**
