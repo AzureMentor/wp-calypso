@@ -63,8 +63,8 @@ function setPayment( payment ) {
 	replaceData( assign( {}, _transaction, { payment: payment } ) );
 }
 
-function setStripeObject( stripe ) {
-	replaceData( assign( {}, _transaction, { stripe } ) );
+function setStripeObject( stripe, stripeConfiguration ) {
+	replaceData( assign( {}, _transaction, { stripe, stripeConfiguration } ) );
 }
 
 function setStep( step ) {
