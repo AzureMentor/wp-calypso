@@ -54,7 +54,7 @@ const tracksRecordEvent = function( eventName, eventProperties ) {
 const EVENTS_MAPPING = [
 	{
 		selector: '.block-editor-block-types-list__item',
-		handler: function( event, target ) {
+		handler: ( event, target ) => {
 			const targetClassname = Array.from( target.classList ).filter( className =>
 				className.includes( 'editor-block-list-item-' )
 			);
@@ -72,6 +72,17 @@ const EVENTS_MAPPING = [
 			} );
 		},
 	},
+	{
+		selector: '.block-editor-block-settings-menu__control',
+		handler: ( event, target ) => {
+			const hasCorrectText = target.innerText.toLowerCase().includes( 'remove block' );
+			const hasCorrectIcon = target.querySelector( 'svg' ).classList.contains( 'dashicons-trash' );
+
+			if ( hasCorrectText || hasCorrectIcon ) {
+				tracksRecordEvent( 'wpcom_block_deleted' );
+			}
+		},
+	},
 ];
 
 /**
@@ -84,8 +95,9 @@ const EVENTS_MAPPING = [
  */
 const delegateClickTracking = function( event ) {
 	const matchingEvents = EVENTS_MAPPING.reduce( ( acc, mapping ) => {
-		const target =
-			event.target.matches( mapping.selector ) || event.target.closest( mapping.selector );
+		const target = event.target.matches( mapping.selector )
+			? event.target
+			: event.target.closest( mapping.selector );
 
 		if ( target ) {
 			acc.push( {
