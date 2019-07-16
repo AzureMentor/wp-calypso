@@ -34,7 +34,7 @@ import CheckoutTerms from './checkout-terms';
 import { injectStripe } from 'react-stripe-elements';
 import { setStripeObject } from 'lib/upgrades/actions';
 
-function isFormSubmitting( transactionStep, props ) {
+function isFormSubmitting( transactionStep ) {
 	switch ( transactionStep.name ) {
 		case BEFORE_SUBMIT:
 			return false;
@@ -47,7 +47,7 @@ function isFormSubmitting( transactionStep, props ) {
 
 		case RECEIVED_AUTHORIZATION_RESPONSE:
 		case RECEIVED_PAYMENT_KEY_RESPONSE:
-			if ( props.transactionStep.error ) {
+			if ( transactionStep.error ) {
 				return false;
 			}
 			return true;
@@ -100,8 +100,8 @@ class CreditCardPaymentBox extends React.Component {
 
 	UNSAFE_componentWillReceiveProps( nextProps ) {
 		if (
-			! isFormSubmitting( this.props.transactionStep, this.props ) &&
-			isFormSubmitting( nextProps.transactionStep, this.props )
+			! isFormSubmitting( this.props.transactionStep ) &&
+			isFormSubmitting( nextProps.transactionStep )
 		) {
 			this.timer = setInterval( this.tick, 100 );
 		}
@@ -168,10 +168,7 @@ class CreditCardPaymentBox extends React.Component {
 
 	paymentBoxActions = () => {
 		let content = this.paymentButtons();
-		if (
-			this.props.transactionStep &&
-			isFormSubmitting( this.props.transactionStep, this.props )
-		) {
+		if ( this.props.transactionStep && isFormSubmitting( this.props.transactionStep ) ) {
 			content = this.progressBar();
 		}
 
